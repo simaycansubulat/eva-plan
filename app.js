@@ -96,7 +96,14 @@ const HOME = {
     { h: "2 · Core, posture + arms (mat)", t: "sets × reps · rest", x: [["curlup", "3 × 10 holds", "30s"], ["deadbug", "2 × 10 / side", "30s"], ["proneyt", "3 × 8", "45s"], ["bottlekick", "3 × 12–15", "45s"], ["kneepush", "2 × 6–10", "60s"]] },
     DAYS.C[3]] }
 };
-function planFor(date) { const k = DOWKEY[date.getDay()]; return (HOME[k] && iso(date) > S.gymEnd) ? HOME[k] : PLAN[k]; }
+/* busy days (submissions etc.): no workout, habits only */
+const BUSY_DEFAULT = ["2026-11-21", "2026-11-22", "2026-11-23", "2026-11-25", "2026-12-09", "2026-12-19", "2026-12-20", "2026-12-21", "2026-12-23", "2027-01-14", "2027-01-15", "2027-01-16", "2027-01-19"];
+if (!Array.isArray(S.busy)) S.busy = BUSY_DEFAULT.slice();
+if (!Array.isArray(S.deadlines)) S.deadlines = ["2026-11-23", "2026-12-21", "2027-01-16"];
+function isDeadline(date) { return S.deadlines.includes(iso(date)); }
+function isBusy(date) { return S.busy.includes(iso(date)); }
+function busyPlan(date) { const name = date.toLocaleDateString("en-GB", { weekday: "long" }); const dl = isDeadline(date); return { t: name + (dl ? " · 📌 Submission day" : " · Busy day"), s: dl ? "Submission today: no workout. Good luck! Just tick your daily habits." : "No workout today. Just tick your daily habits.", b: [], busy: true, deadline: dl, lbl: dl ? "📌 Due" : "Busy", dow: date.getDay() }; }
+function planFor(date) { if (isBusy(date)) return busyPlan(date); const k = DOWKEY[date.getDay()]; return (HOME[k] && iso(date) > S.gymEnd) ? HOME[k] : PLAN[k]; }
 function dayLabel(p) { if (p.lbl) return p.lbl; return p.gym ? (p.home ? "Home " : "Gym ") + p.t.slice(-1) : (p.dow === 4 ? "Rest" : (p.dow === 6 ? "Yoga" : "Splits")); }
 
 /* ---------- 16-week progression ---------- */
@@ -305,6 +312,7 @@ function viewDay(dateIso) {
   ${m.food ? `<div class="note accent"><strong>Food today:</strong> ${esc(m.food)}</div>` : ""}
   ${dateIso === S.gymEnd && plan.gym && !plan.home ? `<div class="note accent"><strong>Last gym day!</strong> From Monday your Mon/Wed/Fri workouts are home mat workouts. Write down your best hip thrust weight today.</div>` : ""}
   ${plan.home ? `<div class="note accent"><strong>Home workout:</strong> same goals, no machines. Do the reps slowly and squeeze hard. To make it harder, add reps or put a backpack with books on your hips for the sofa hip thrust.</div>` : ""}
+  ${plan.busy ? `<div class="note accent"><strong>Busy day: no workout.</strong> Focus on your deadline. Eat regular meals (Gilbert's), drink water, and take posture breaks while you work. Your workouts continue on the next training day.</div>` : ""}
   ${blockNote}${measure}
   <div class="card"><h3>Daily habits</h3><div class="habits">${HABITS.map(h => `<label class="chk"><input type="checkbox" data-h="${h[0]}" data-date="${dateIso}" ${hab[h[0]] ? "checked" : ""}>${esc(h[1])}</label>`).join("")}</div></div>
   ${brace}${blocks}`;
@@ -324,7 +332,7 @@ function viewCalendar() {
     <span class="hgo">${pr.done ? `${pr.done} of ${pr.total} done · continue` : "Open this day"} →</span></a>
   ${nextM && nextM !== rI ? `<p class="small" style="margin:8px 0 0">📏 Next measurement: <b>${esc(fmt(parseD(nextM)))}</b></p>` : ""}
   <div class="card keybox"><b>How to read the calendar</b>
-    <div class="keyrow"><span class="kc gymk">Gym A</span> gym days (A, B, C, and D = optional) · <span class="kc">Splits</span> <span class="kc">Yoga</span> <span class="kc">Rest</span> home days</div>
+    <div class="keyrow"><span class="kc gymk">Gym A</span> gym days (A, B, C, and D = optional) · <span class="kc duek">📌 Due</span> submission day · <span class="kc">Busy</span> no workout (before deadlines and busy days) · <span class="kc">Splits</span> <span class="kc">Yoga</span> <span class="kc">Rest</span> home days</div>
     <div class="keyrow">Colour = cycle phase: <span class="chip ph-period">Period</span><span class="chip ph-foll">Strong</span><span class="chip ph-ovu">Ovulation</span><span class="chip ph-lut">Luteal</span><span class="chip ph-late">Pre-period</span></div>
     <div class="keyrow">📏 measurement day · ✓ finished · • started · outlined = today</div></div>`;
   let m = new Date(st.getFullYear(), st.getMonth(), 1);
@@ -338,7 +346,7 @@ function viewCalendar() {
       if (d < st || d > end) { html += `<span class="cell out"><span class="dn">${dn}</span></span>`; continue; }
       const p = planFor(d); const c = cycleAt(d); const pc = countProgress(dI);
       const mark = (md.includes(dI) ? "📏" : "") + (pc.total && pc.done >= pc.total ? "✓" : (pc.done ? "•" : ""));
-      html += `<a href="#d-${dI}" class="cell ph-${c ? c.k : "none"}${dI === tI ? " istoday" : ""}${p.gym ? " gymcell" : ""}" aria-label="${esc(fmt(d))}: ${esc(label(p))}${c ? ", cycle day " + c.day + ", " + esc(c.ph.n) : ""}"><span class="dn">${dn}</span><span class="ic">${esc(label(p))}</span><span class="mk">${mark}</span></a>`;
+      html += `<a href="#d-${dI}" class="cell ph-${c ? c.k : "none"}${dI === tI ? " istoday" : ""}${p.gym ? " gymcell" : ""}${p.busy ? " busycell" : ""}${p.deadline ? " duecell" : ""}" aria-label="${esc(fmt(d))}: ${esc(label(p))}${c ? ", cycle day " + c.day + ", " + esc(c.ph.n) : ""}"><span class="dn">${dn}</span><span class="ic">${esc(label(p))}</span><span class="mk">${mark}</span></a>`;
     }
     html += `</div>`;
     m = new Date(y, mo + 1, 1);
@@ -401,6 +409,9 @@ function viewOverview() {
   <h2>How your cycle changes each day</h2><ul class="clean"><li><b>Period days 1–2:</b> gym days drop to 2 sets and about 20% lighter.</li><li><b>Days 3–5:</b> normal sets, a bit lighter if tired.</li><li><b>Strong phase:</b> push for an extra rep or weight.</li><li><b>Ovulation:</b> strong, but extra careful warm-up.</li><li><b>Luteal:</b> same weights, clean form.</li><li><b>Pre-period:</b> drop the last set if you're tired.</li></ul>
   <h2>Gym basics</h2><div class="gloss"><div><b>Rep</b>: one full movement.</div><div><b>Set</b>: reps in a row. "3 × 10" = 3 sets of 10.</div><div><b>Rest</b>: pause between sets.</div><div><b>/ side</b>: all reps on one side, then the other.</div><div><b>Reps left</b>: stop most sets when 1–3 more would be possible.</div><div><b>Weight</b>: move the pin, or add plates.</div></div>
   <p class="small">İTÜ doesn't publish its machine list, so every machine exercise has a <b>"No machine?"</b> alternative. Before using a machine, check the pin, cable and clips, and that dumbbell screws are tight; tell the attendant if anything is loose.</p>
+  <h2>Busy days (no workout)</h2><p class="small">Deadlines and days you can't train. They stay in the calendar for your daily habits. Submission days: ${S.deadlines.map(x => esc(fmt(parseD(x)))).join(", ")}.</p>
+  <div class="list">${[...S.busy].sort().map(b => `<div class="li"><span>${esc(fmtY(parseD(b)))}</span><button type="button" class="btn ghost" style="padding:4px 10px" data-delb="${b}" aria-label="Remove ${esc(b)}">Remove</button></div>`).join("") || `<div class="li">No busy days</div>`}</div>
+  <div class="row" style="margin-top:8px"><label class="field">Add a busy day<input type="date" id="bdate"></label><button type="button" class="btn ghost" id="badd">Add</button></div>
   <h2>My details</h2><div class="card"><div class="row"><label class="field">Age<input type="number" inputmode="numeric" id="age" value="${esc(S.profile.age || "")}"></label><label class="field">Height (cm)<input type="number" inputmode="numeric" id="height" value="${esc(S.profile.height || "")}"></label><label class="field">Start weight (kg)<input type="number" inputmode="decimal" step="0.1" id="sweight" value="${esc(S.profile.startWeight || "")}"></label><input type="hidden" id="gymend" value="${esc(S.gymEnd)}"></div><button type="button" class="btn ghost" id="psave" style="margin-top:10px">Save details</button></div>
   <h2>Backup</h2><p class="small">Everything is saved only on this phone. Make a backup once a month and keep it in Files or iCloud Drive.</p>
   <div class="row"><button type="button" class="btn" id="exp">Save a backup</button><label class="btn ghost" for="imp">Restore a backup</label><input type="file" id="imp" accept="application/json,.json" hidden></div>
@@ -525,6 +536,8 @@ document.addEventListener("click", async ev => {
     S.meas = S.meas.filter(x => x.d !== d); S.meas.push(e); save(); toast("Measurements saved"); if (pre === "dm") refreshProgress(); else route(); return;
   }
   if (el.id === "padd") { const v = document.getElementById("pdate").value; if (!v) return; if (!S.periods.includes(v)) S.periods.push(v); save(); route(); toast("Period saved. Your calendar has been updated."); }
+  else if (el.id === "badd") { const v = document.getElementById("bdate").value; if (!v) return; if (!S.busy.includes(v)) S.busy.push(v); save(); route(); toast("Busy day added"); }
+  else if (el.dataset.delb) { S.busy = S.busy.filter(b => b !== el.dataset.delb); save(); route(); }
   else if (el.dataset.delp) { S.periods = S.periods.filter(p => p !== el.dataset.delp); save(); route(); }
   else if (el.id === "csave") { const pl = +document.getElementById("plen").value, cl = +document.getElementById("clen").value; if (pl >= 2 && pl <= 10) S.periodLen = pl; if (cl >= 20 && cl <= 40) S.cycleLen = cl; save(); route(); toast("Saved"); }
   else if (el.id === "psave") { const a = +document.getElementById("age").value, h = +document.getElementById("height").value, w = +document.getElementById("sweight").value; if (a) S.profile.age = a; if (h) S.profile.height = h; if (w) S.profile.startWeight = w; const ge = document.getElementById("gymend").value; if (ge) S.gymEnd = ge; save(); toast("Details saved"); }
