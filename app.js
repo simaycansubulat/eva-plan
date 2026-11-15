@@ -102,7 +102,7 @@ if (!Array.isArray(S.busy)) S.busy = BUSY_DEFAULT.slice();
 if (!Array.isArray(S.deadlines)) S.deadlines = ["2026-11-23", "2026-12-21", "2027-01-16"];
 function isDeadline(date) { return S.deadlines.includes(iso(date)); }
 function isBusy(date) { return S.busy.includes(iso(date)); }
-function busyPlan(date) { const name = date.toLocaleDateString("en-GB", { weekday: "long" }); const dl = isDeadline(date); return { t: name + (dl ? " · 📌 Submission day" : " · Busy day"), s: dl ? "Submission today: no workout. Good luck! Just tick your daily habits." : "No workout today. Just tick your daily habits.", b: [], busy: true, deadline: dl, lbl: dl ? "📌 Due" : "Busy", dow: date.getDay() }; }
+function busyPlan(date) { const name = date.toLocaleDateString("en-GB", { weekday: "long" }); const dl = isDeadline(date); return { t: name + (dl ? " · 📌 Submission day" : " · Busy day"), s: dl ? "Submission today: no workout. Good luck! Just tick your daily habits." : "No workout today. Just tick your daily habits.", b: [], busy: true, deadline: dl, lbl: dl ? "📌 Due" : "✕ Busy", dow: date.getDay() }; }
 function planFor(date) { if (isBusy(date)) return busyPlan(date); const k = DOWKEY[date.getDay()]; return (HOME[k] && iso(date) > S.gymEnd) ? HOME[k] : PLAN[k]; }
 function dayLabel(p) { if (p.lbl) return p.lbl; return p.gym ? (p.home ? "Home " : "Gym ") + p.t.slice(-1) : (p.dow === 4 ? "Rest" : (p.dow === 6 ? "Yoga" : "Splits")); }
 
@@ -332,7 +332,7 @@ function viewCalendar() {
     <span class="hgo">${pr.done ? `${pr.done} of ${pr.total} done · continue` : "Open this day"} →</span></a>
   ${nextM && nextM !== rI ? `<p class="small" style="margin:8px 0 0">📏 Next measurement: <b>${esc(fmt(parseD(nextM)))}</b></p>` : ""}
   <div class="card keybox"><b>How to read the calendar</b>
-    <div class="keyrow"><span class="kc gymk">Gym A</span> gym days (A, B, C, and D = optional) · <span class="kc duek">📌 Due</span> submission day · <span class="kc">Busy</span> no workout (before deadlines and busy days) · <span class="kc">Splits</span> <span class="kc">Yoga</span> <span class="kc">Rest</span> home days</div>
+    <div class="keyrow"><span class="kc gymk">Gym A</span> gym days (A, B, C, and D = optional) · <span class="kc duek">📌 Due</span> submission day · <span class="kc busyk">Busy</span> no workout (before deadlines and busy days) · <span class="kc">Splits</span> <span class="kc">Yoga</span> <span class="kc">Rest</span> home days</div>
     <div class="keyrow">Colour = cycle phase: <span class="chip ph-period">Period</span><span class="chip ph-foll">Strong</span><span class="chip ph-ovu">Ovulation</span><span class="chip ph-lut">Luteal</span><span class="chip ph-late">Pre-period</span></div>
     <div class="keyrow">📏 measurement day · ✓ finished · • started · outlined = today</div></div>`;
   let m = new Date(st.getFullYear(), st.getMonth(), 1);
