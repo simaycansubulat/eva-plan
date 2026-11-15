@@ -1,5 +1,5 @@
 // Offline support: try the network first (so updates show right away), fall back to the saved copy when offline.
-const CACHE = "eva-v9";
+const CACHE = "eva-v10";
 const FILES = ["./", "./index.html", "./app.js", "./manifest.webmanifest", "./icon-180.png", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith("eva-") && k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
@@ -9,7 +9,8 @@ self.addEventListener("fetch", e => {
     const c = await caches.open(CACHE);
     try {
       const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 4000);
-      const r = await fetch(e.request, { signal: ctrl.signal }); clearTimeout(t);
+      const same = new URL(e.request.url).origin === location.origin;
+      const r = await fetch(e.request, same ? { signal: ctrl.signal, cache: "no-cache" } : { signal: ctrl.signal }); clearTimeout(t);
       if (r && (r.ok || r.type === "opaque")) c.put(e.request, r.clone());
       return r;
     } catch (err) {

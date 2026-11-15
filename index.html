@@ -406,9 +406,9 @@ const ALT = {
   chestpress: "No chest press machine? Pec deck / chest fly machine (light), or push-ups on your knees."
 };
 </script>
-<script src="app.js"></script>
+<script src="app.js?v=10"></script>
 <script>
-if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});}
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).catch(()=>{});});}
 </script>
 </body>
 </html>
