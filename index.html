@@ -76,6 +76,7 @@ nav.bar a[aria-current="page"]{color:var(--accent)}
 .works{display:block;font-size:.8rem;color:var(--sage);margin-top:2px}
 .ex small.s{display:block;color:var(--muted);font-size:.86rem;line-height:1.45;margin-top:2px}
 .start{display:block;font-size:.8rem;color:var(--accent);font-weight:600;margin-top:3px}
+.alt{display:block;font-size:.8rem;margin-top:4px;padding:4px 8px;border-radius:6px;background:var(--soft);color:var(--muted)}
 .tip{display:block;font-size:.82rem;margin-top:4px;padding:4px 8px;border-radius:6px;background:var(--sage-soft);color:var(--sage)}
 .tag{display:inline-block;font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;border-radius:999px;margin-left:4px;vertical-align:2px}
 .tag.side{background:var(--accent-soft);color:var(--accent)}
@@ -299,12 +300,12 @@ EX.clamshell = Object.assign({}, EX.clamshell, { s: "Side glutes with very littl
 const TIPS = {
   htm: "Neck: keep your gaze forward and your chin neutral. Don't throw your head back. Brace your belly and lock out with your glutes.",
   slht: "Neck: gaze forward, chin neutral. Hips level, squeeze the glute.",
-  bstance: "Neck: gaze forward, chin neutral. Lock out with the glute.",
+  bstance: "Neck: gaze forward, chin neutral. Lock out with the glute; great for glute projection.",
   smithrdl: "Back flat, neck in line with your spine: look at the floor a little ahead of you.",
-  backext: "Neck: keep it long and in line with your spine. Don't look up at the top.",
+  backext: "Upper glute: feet turned out, upper back slightly rounded, squeeze your glutes to lift. Neck long, don't look up.",
   pullthrough: "Hinge at the hips with a flat back and a long neck.",
   legcurl: "Keep your hips pressed into the pad and your head relaxed.",
-  kickback: "Ribs down and belly tight. Don't crane your neck up.",
+  kickback: "Upper glute: toes pointing down, kick back and slightly out, squeeze at the top. Ribs down, neck relaxed.",
   cablerow: "Posture: sit tall, shoulders down and back before each pull, neck long.",
   closerow: "Posture: sit tall, shoulders down and back before each pull, neck long.",
   facepull: "Posture: one of your best exercises for neck and shoulder posture. Finish with shoulders back and down.",
@@ -315,7 +316,7 @@ const TIPS = {
   deadbug: "Neck: head stays relaxed on the floor the whole time.",
   revcrunch: "Neck: head stays relaxed on the floor. The abs do the work.",
   plank: "Neck: look at the floor just in front of your hands, keep your neck long.",
-  sideplank: "Neck: keep your head in line with your body, don't let it drop.",
+  sideplank: "Bodyweight only, never with weights, so your waist stays slim. Head in line with your body.",
   birddog: "Neck: look at the floor, neck long, like a straight line from head to heel.",
   thorext: "Posture: one of the most important exercises for your neck and upper back.",
   wallslide: "Posture: head, upper back and glutes stay on the wall.",
@@ -324,25 +325,25 @@ const TIPS = {
 
 const DAYS = {
   A: [
-    { h: "Warm-up", t: "~12 min", warm: true, x: [["walk", "5 min"], ["catcow", "8"], ["n9090", "8 / side"], ["openbook", "8 / side"], ["bridge", "2 × 12", "30s"]] },
+    { h: "Warm-up + hip mobility", t: "~14 min", warm: true, x: [["walk", "5 min"], ["catcow", "8"], ["n9090", "8 / side"], ["cars", "5 / dir"], ["rockback", "10 / side"], ["openbook", "8 / side"], ["bridge", "2 × 12", "30s"]] },
     { h: "1 · Mat", t: "sets × reps · rest", x: [["clamshell", "2 × 15 / side", "30s"], ["deadbug", "3 × 8 / side", "30s"], ["plank", "2 × 20–30s", "30s"]] },
     { h: "2 · Machines", t: "sets × reps · rest", x: [["htm", "3 × 8–12", "2 min"], ["legcurl", "3 × 10–12", "90s"], ["kickback", "3 × 12–15 / side", "60s"], ["cablerow", "3 × 10–12", "90s"], ["facepull", "3 × 15", "60s"]] },
     { h: "Cool-down", t: "~6 min", warm: true, x: [["fig4", "40s / side"], ["supham", "40s / side"], ["doorway", "30s / side"], ["kneechest", "30s"]] }
   ],
   B: [
-    { h: "Warm-up", t: "~12 min", warm: true, x: [["walk", "5 min"], ["legswing", "12 / side"], ["wallhinge", "10"], ["rockback", "10 / side"], ["wallslide", "10"]] },
+    { h: "Warm-up + hip mobility", t: "~14 min", warm: true, x: [["walk", "5 min"], ["legswing", "12 / side"], ["n9090", "8 / side"], ["cars", "5 / dir"], ["wallhinge", "10"], ["wallslide", "10"], ["bridge", "2 × 10", "30s"]] },
     { h: "1 · Mat", t: "sets × reps · rest", x: [["donkey", "2 × 15 / side", "30s"], ["birddog", "3 × 6 / side", "30s"], ["plank", "3 × 20–30s", "30s"]] },
     { h: "2 · Machines", t: "sets × reps · rest", x: [["smithrdl", "3 × 10", "2 min"], ["backext", "3 × 12", "90s"], ["slht", "3 × 10–12 / side", "60s"], ["pulldown", "3 × 10–12", "90s"], ["chestpress", "2 × 12", "60s"]] },
     { h: "Cool-down", t: "~6 min", warm: true, x: [["supham", "45s / side"], ["fig4", "40s / side"], ["hipflexor", "30s / side"], ["childs", "30s"]] }
   ],
   C: [
-    { h: "Warm-up", t: "~12 min", warm: true, x: [["walk", "5 min"], ["childs", "8 + 30s"], ["n9090", "8 / side"], ["cars", "5 / dir"], ["bridge", "2 × 10", "30s"]] },
+    { h: "Warm-up + hip mobility", t: "~14 min", warm: true, x: [["walk", "5 min"], ["childs", "8 + 30s"], ["n9090", "8 / side"], ["cars", "5 / dir"], ["rockback", "10 / side"], ["bridge", "2 × 12", "30s"]] },
     { h: "1 · Mat (abs)", t: "sets × reps · rest", x: [["revcrunch", "3 × 10", "45s"], ["deadbug", "3 × 8 / side", "30s"], ["sideplank", "3 × 20–30s / side", "30s"]] },
     { h: "2 · Machines", t: "sets × reps · rest", x: [["bstance", "3 × 10–12 / side", "90s"], ["pullthrough", "3 × 12–15", "60s"], ["closerow", "3 × 10–12", "90s"], ["pallof", "3 × 10 / side", "45s"], ["pushdown", "2 × 12–15", "60s"]] },
     { h: "Cool-down", t: "~6 min", warm: true, x: [["fig4", "40s / side"], ["sidechild", "30s / side"], ["doorway", "30s / side"], ["kneechest", "30s"]] }
   ],
   D: [
-    { h: "Warm-up", t: "~10 min", warm: true, x: [["walk", "5 min"], ["catcow", "8"], ["cars", "5 / dir"], ["bridge", "2 × 12", "30s"]] },
+    { h: "Warm-up + hip mobility", t: "~12 min", warm: true, x: [["walk", "5 min"], ["catcow", "8"], ["n9090", "8 / side"], ["cars", "5 / dir"], ["rockback", "10 / side"], ["bridge", "2 × 12", "30s"]] },
     { h: "1 · Mat", t: "sets × reps · rest", x: [["frogpump", "2 × 20", "45s"], ["clamshell", "2 × 15 / side", "30s"], ["revcrunch", "3 × 10", "45s"]] },
     { h: "2 · Machines (pump day)", t: "sets × reps · rest", x: [["htm", "3 × 12–15", "90s"], ["kickback", "2 × 15 / side", "45s"], ["facepull", "3 × 15", "60s"], ["pallof", "2 × 10 / side", "45s"]] },
     { h: "Cool-down", t: "~5 min", warm: true, x: [["fig4", "40s / side"], ["doorway", "30s / side"], ["childs", "30s"]] }
@@ -357,7 +358,7 @@ const POSTURE = { h: "Posture (neck + upper back)", t: "~8 min", warm: true, x: 
 const YOGABLOCK = { yoga: true };
 const PLAN = {
   mon: { t: "Monday · Day A", s: "Gym · glutes + back posture · ~65 min", gym: true, b: DAYS.A, dow: 1 },
-  tue: { t: "Tuesday", s: "Home · band glutes + splits + posture · ~55 min", b: [{ h: "Warm-up", t: "~5 min", warm: true, x: [["catcow", "8"], ["bridge", "2 × 10", "30s"]] }, { h: "Glutes with bands (mat)", t: "sets × reps · rest", x: [["bandbridge", "3 × 15", "45s"], ["bandkick", "3 × 15 / side", "30s"], ["clamshell", "3 × 15 / side", "30s"], ["frogpump", "2 × 20", "45s"]] }, ...SPLITS, POSTURE], dow: 2, split: true, lbl: "Splits" },
+  tue: { t: "Tuesday", s: "Home · band glutes + splits + posture · ~55 min", b: [{ h: "Warm-up + hip mobility", t: "~8 min", warm: true, x: [["catcow", "8"], ["n9090", "8 / side"], ["cars", "5 / dir"], ["rockback", "10 / side"], ["bridge", "2 × 10", "30s"]] }, { h: "Glutes with bands (mat)", t: "sets × reps · rest", x: [["bandbridge", "3 × 15", "45s"], ["bandkick", "3 × 15 / side", "30s"], ["clamshell", "3 × 15 / side", "30s"], ["frogpump", "2 × 20", "45s"]] }, ...SPLITS, POSTURE], dow: 2, split: true, lbl: "Splits" },
   wed: { t: "Wednesday · Day B", s: "Gym · back of legs + upper body · ~65 min", gym: true, b: DAYS.B, dow: 3 },
   thu: { t: "Thursday", s: "Home · yoga + posture · ~30 min", b: [YOGABLOCK, POSTURE], dow: 4, lbl: "Yoga" },
   fri: { t: "Friday · Day C", s: "Gym · glutes + abs · ~65 min", gym: true, b: DAYS.C, dow: 5 },
@@ -380,6 +381,24 @@ Object.assign(VIDEOS, {
   bandkick: [YT("fTdoiY7PxUc", "Coach Liss")],
   thorext: [YT("kCoTeRB8c-g", "Doctor Jo, physical therapist")]
 });
+/* "No machine?" alternatives, because the exact İTÜ equipment list isn't published */
+const ALT = {
+  htm: "No hip thrust machine or it's busy? Smith machine hip thrust (bench across the Smith, padded bar on your hips, start with the empty bar), or a barbell hip thrust with a pad.",
+  slht: "No machine? Do it with your upper back on a bench and a dumbbell on the working hip.",
+  bstance: "No machine? Smith machine or barbell B-stance hip thrust with a pad.",
+  smithrdl: "No Smith machine? Dumbbell Romanian deadlift: same movement, dumbbells close to your legs.",
+  backext: "No 45° bench? Do an extra 2 sets of cable pull-throughs instead.",
+  kickback: "No ankle strap? Use a glute kickback machine pushing backward only, or a resistance band on all fours (banded kickback).",
+  legcurl: "Seated or lying leg curl both work. Neither? Lie on your back and do towel hamstring curls on a smooth floor.",
+  pullthrough: "Cable broken? Dumbbell Romanian deadlift, light, 3 × 12.",
+  cablerow: "No cable row? Seated row machine, or chest-supported dumbbell row on an incline bench.",
+  closerow: "No cable row? Seated row machine with a neutral grip.",
+  facepull: "No rope? Use two single handles, or a resistance band tied to a rack at face height.",
+  pulldown: "No lat pulldown? Assisted pull-up machine with plenty of assistance.",
+  pallof: "No free cable? Do it with your resistance band tied to a rack.",
+  pushdown: "No cable? Dumbbell overhead triceps extension, light.",
+  chestpress: "No chest press machine? Light dumbbell bench press or knee push-ups."
+};
 </script>
 <script src="app.js"></script>
 <script>
