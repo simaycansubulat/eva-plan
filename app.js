@@ -103,7 +103,34 @@ if (!Array.isArray(S.deadlines)) S.deadlines = ["2026-11-23", "2026-12-21", "202
 function isDeadline(date) { return S.deadlines.includes(iso(date)); }
 function isBusy(date) { return S.busy.includes(iso(date)); }
 function busyPlan(date) { const name = date.toLocaleDateString("en-GB", { weekday: "long" }); const dl = isDeadline(date); return { t: name + (dl ? " · 📌 Submission day" : " · Busy day"), s: dl ? "Submission today: no workout. Good luck! Just tick your daily habits." : "No workout today. Just tick your daily habits.", b: [], busy: true, deadline: dl, lbl: dl ? "📌 Due" : "✕ Busy", dow: date.getDay() }; }
-function planFor(date) { if (isBusy(date)) return busyPlan(date); const k = DOWKEY[date.getDay()]; return (HOME[k] && iso(date) > S.gymEnd) ? HOME[k] : PLAN[k]; }
+/* Each week Gym A, B and C go on their usual days (Mon, Wed, Fri). If one of those is a busy day,
+   the workout moves to the nearest free day that week, avoiding back-to-back gym days where possible. */
+const LETTERDAY = { A: "mon", B: "wed", C: "fri", D: "sat" };
+const LETTERPREF = { A: 0, B: 2, C: 4, D: 5 };
+function weekSched(monday) {
+  const free = [0, 1, 2, 3, 4, 5, 6].map(i => !isBusy(addD(monday, i))); const at = {};
+  for (const L of ["A", "B", "C"]) {
+    let best = null, bs = 1e9;
+    for (let i = 0; i < 7; i++) {
+      if (!free[i] || at[i]) continue;
+      let sc = Math.abs(i - LETTERPREF[L]) + (i < LETTERPREF[L] ? 0.5 : 0);
+      if (at[i - 1] || at[i + 1]) sc += 2;
+      if (sc < bs) { bs = sc; best = i; }
+    }
+    if (best !== null) at[best] = L;
+  }
+  if (free[5] && !at[5]) at[5] = "D";
+  return at;
+}
+function planFor(date) {
+  if (isBusy(date)) return busyPlan(date);
+  const k = DOWKEY[date.getDay()]; const i = (date.getDay() + 6) % 7; const L = weekSched(addD(date, -i))[i];
+  const name = date.toLocaleDateString("en-GB", { weekday: "long" });
+  if (L) { const base = PLAN[LETTERDAY[L]]; if (LETTERDAY[L] === k) return base; return Object.assign({}, base, { t: name + " · Day " + L, moved: true, dow: date.getDay() }); }
+  const base = PLAN[k];
+  if (base.gym) return Object.assign({}, PLAN.thu, { t: name + " · Yoga + posture", s: "Home · yoga + posture · ~30 min. Your gym workout moved to another day this week.", lbl: "Yoga", dow: date.getDay() });
+  return base;
+}
 function dayLabel(p) { if (p.lbl) return p.lbl; return p.gym ? (p.home ? "Home " : "Gym ") + p.t.slice(-1) : (p.dow === 4 ? "Rest" : (p.dow === 6 ? "Yoga" : "Splits")); }
 
 /* ---------- 16-week progression ---------- */
@@ -311,6 +338,7 @@ function viewDay(dateIso) {
   ${m.food ? `<div class="note accent"><strong>Food today:</strong> ${esc(m.food)}</div>` : ""}
   ${dateIso === S.gymEnd && plan.gym && !plan.home ? `<div class="note accent"><strong>Last gym day!</strong> From Monday your Mon/Wed/Fri workouts are home mat workouts. Write down your best hip thrust weight today.</div>` : ""}
   ${plan.home ? `<div class="note accent"><strong>Home workout:</strong> same goals, no machines. Do the reps slowly and squeeze hard. To make it harder, add reps or put a backpack with books on your hips for the sofa hip thrust.</div>` : ""}
+  ${plan.moved ? `<div class="note accent"><strong>Moved workout:</strong> this gym day moved here because of a busy day this week.</div>` : ""}
   ${plan.busy ? `<div class="note accent"><strong>Busy day: no workout.</strong> Focus on your deadline. Eat regular meals (Gilbert's), drink water, and take posture breaks while you work. Your workouts continue on the next training day.</div>` : ""}
   ${blockNote}${measure}
   <div class="card"><h3>Daily habits</h3><div class="habits">${HABITS.map(h => `<label class="chk"><input type="checkbox" data-h="${h[0]}" data-date="${dateIso}" ${hab[h[0]] ? "checked" : ""}>${esc(h[1])}</label>`).join("")}</div></div>
